@@ -1,5 +1,12 @@
 package com.manzano.personalfinance.transaction;
 
+/*
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
+ */
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +22,24 @@ public class FinancialTransactionController {
         this.service = service;
     }
 
+
+    /*
+    @Operation(
+            summary = "Crear una transacción financiera",
+            description = "Registra una nueva transacción de tipo ingreso o gasto"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Transacción creada correctamente"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Datos de entrada inválidos"
+            )
+    })
+
+     */
     @PostMapping()
     public ResponseEntity<FinancialTransaction> createTransaction(@Valid @RequestBody CreateFinancialTransactionRequest request){
         return ResponseEntity
