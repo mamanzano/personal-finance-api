@@ -1,5 +1,6 @@
 package com.manzano.personalfinance.transaction;
 
+import com.manzano.personalfinance.exception.TransactionNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -114,4 +116,47 @@ public class FinancialTransactionServiceTest {
         verify(repository).findAllByOrderByDateDesc();
     }
 
+    @Test
+    void shouldReturnTransactionWhenIdExists(){
+        //Arrenge
+
+        LocalDate transactionDate = LocalDate.of(2026, 9, 19);
+
+        FinancialTransaction transaction = new FinancialTransaction();
+        transaction.setDescription("Supermercado");
+        transaction.setType(TransactionType.EXPENSE);
+        transaction.setAmount(new BigDecimal("100.50"));
+        transaction.setDate(transactionDate);
+
+
+        when(repository.findById(1L))
+                .thenReturn(Optional.of(transaction));
+
+
+        //Act
+        FinancialTransactionResponse response = service.getTransactionById(1L);
+
+        //Asserts
+        assertNotNull(response);
+        assertEquals("Supermercado", response.getDescription());
+        assertEquals(new BigDecimal("100.50"), response.getAmount());
+        assertEquals(TransactionType.EXPENSE, response.getType());
+        assertEquals(transactionDate, response.getDate());
+
+        verify(repository).findById(1L);
+    }
+
+    @Test
+    void shouldThrowTransactionNotFoundExceptionWhenIdDoesNotExist(){
+
+        //Arrange
+        when(repository.findById(100L))
+                .thenReturn(Optional.empty());
+
+        // Act + Assert
+
+        assertThrows(TransactionNotFoundException.class,() -> service.getTransactionById(100L));
+
+        verify(repository).findById(100L);
+    }
 }
