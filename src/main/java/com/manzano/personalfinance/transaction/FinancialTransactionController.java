@@ -54,4 +54,9 @@ public class FinancialTransactionController {
     public ResponseEntity<List<FinancialTransactionResponse>> getTransactions(){
         return ResponseEntity.ok(service.getTransactions());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<FinancialTransactionResponse> getTransactionById(@PathVariable(name = "id") Long id){
+        return ResponseEntity.ok(service.getTransactionById(id));
+    }
 }

@@ -1,5 +1,6 @@
 package com.manzano.personalfinance.transaction;
 
+import com.manzano.personalfinance.exception.TransactionNotFoundException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -30,13 +31,29 @@ public class FinancialTransactionService {
     public List<FinancialTransactionResponse> getTransactions(){
         return repository.findAllByOrderByDateDesc()
                 .stream()
-                .map(transaction ->
-                new FinancialTransactionResponse(transaction.getId(),
-                        transaction.getDescription(),
-                        transaction.getAmount(),
-                        transaction.getType(),
-                        transaction.getDate()))
+                .map(this::toResponse)
                 .toList();
+    }
+
+    public FinancialTransactionResponse getTransactionById(Long id){
+
+        FinancialTransaction transaction = repository.findById(id)
+                .orElseThrow(()->
+                                new TransactionNotFoundException(
+                                        "Transaction not found with id: " + id
+                                )
+                        );
+
+        return toResponse(transaction);
+    }
+
+    private FinancialTransactionResponse toResponse(FinancialTransaction transaction){
+
+        return new FinancialTransactionResponse(transaction.getId(),
+                transaction.getDescription(),
+                transaction.getAmount(),
+                transaction.getType(),
+                transaction.getDate());
     }
 
 }
